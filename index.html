@@ -34,6 +34,7 @@
 			<li><a href="#modal-bouncefromtopshaky" title="Clicking this link shows the modal">Demo bounceFromTopShaky</a></li>
 			<li><a href="#modal-html5video" title="Clicking this link shows a modal with HTML5 Video content">Demo HTML5Video</a></li>
 			<li><a href="#modal-image" title="Clicking this link shows a modal with image content">Demo Image</a></li>
+			<li><a href="#modal-slideshow" title="Clicking this link shows a modal with slideshow content">Demo Slideshow</a></li>
 		</ul>
 
 		<!-- A modal with its content -->
@@ -187,7 +188,23 @@
 		role="dialog" aria-labelledby="modal-label" aria-hidden="true">
 			<div class="modal-inner">
 				<div class="modal-content">
-					<img src="http://farm7.staticflickr.com/6163/6202508462_bf8d1b2a78_b.jpg">
+					<img src="cat.jpg">
+				</div>
+			</div>
+
+			<a href="#!" class="modal-close" title="Close this modal" data-close="Close"
+				data-dismiss="modal">×</a>
+		</section>
+
+		<section class="modal--show" data-modal-slideshow id="modal-slideshow" tabindex="-1"
+		role="dialog" aria-labelledby="modal-label" aria-hidden="true">
+			<div class="modal-inner">
+				<div class="modal-content">
+					<img src="cat.jpg" alt="">
+					<img src="cat.jpg" alt="">
+					<img src="cat.jpg" alt="">
+					<img src="cat.jpg" alt="">
+					<img src="cat.jpg" alt="">
 				</div>
 			</div>
 
@@ -206,6 +223,7 @@
 
 		<script src="modal.js"></script><!-- JS for Modal -->
 		<script src="plugins/resizemodal.js"></script><!-- JS for Modal -->
+		<script src="plugins/slideshow.js"></script>
 		<!-- <script src="plugins/html5video-playback.js"></script> -->
 	</body>
 </html>
