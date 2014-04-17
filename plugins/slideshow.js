@@ -12,21 +12,46 @@
  * @param action {string} stating the action `close`|`next`|`previous`
  */
 
-var _slideshowHandler = function (element, action) {
-	if (!element) {
-		throw new Error('Error: No element specified');
-	}
+var _slideshowHandler = function (CSSModal, action) {
 	if (!action) {
 		throw new Error('Error: No action specified');
 	}
 
+	var currentItem = CSSModal.activeElement.querySelector('img.is-active');
+	var allItems = CSSModal.activeElement.querySelectorAll('img');
+	var i = 0;
+	var nextItem;
+	var previousItem;
+
 	// Evaluate action
 	if (action == 'close') {
-		CSSModal.activeElement.trigger('cssmodal:hide');
+		CSSModal.trigger('cssmodal:hide', CSSModal.activeElement);
 	} else if (action == 'next') {
-		CSSModal.activeElement.trigger('cssmodal:slideshow:next');
+		for (; i < allItems.length; i++) {
+			if (allItems[i].className = 'is-active') {
+
+				if (allItems[i + 1]) {
+					nextItem = allItems[i + 1];
+				}
+
+				allItems[i].setAttribute('class', '');
+
+				_initSlideshowItem(nextItem, 'show');
+			}
+		}
+		// CSSModal.trigger('cssmodal:slideshow:next', CSSModal.activeElement);
 	} else if (action == 'previous') {
-		CSSModal.activeElement.trigger('cssmodal:slideshow:previous');
+		for (; i < allItems.length; i++) {
+			if (allItems[i].className = 'is-active') {
+				if (allItems[i - 1]) {
+					previousItem = allItems[i - 1];
+				}
+				// allItems[i].setAttribute('class', '');
+				_initSlideshowItem(previousItem, 'show');
+			}
+		}
+
+		CSSModal.trigger('cssmodal:slideshow:previous', CSSModal.activeElement);
 	}
 };
 
@@ -40,17 +65,10 @@ var _keyboardHandler = function (CSSModal, key) {
 		throw new Error('Error: No key specified');
 	}
 
-	switch (key.which) {
-		case '37': // arr left key
-		  CSSModal.activeElement.trigger('cssmodal:slideshow:previous');
-		  console.log(CSSModal.activeElement.trigger('cssmodal:slideshow:previous'));
-		break;
-		case '39': // arr right key
-		  CSSModal.activeElement.trigger('cssmodal:slideshow:next');
-		break;
-		case '27': // ESC right key
-		  CSSModal.activeElement.trigger('cssmodal:hide');
-		break;
+	if (key.which == '37') {
+		_slideshowHandler(CSSModal, 'previous');
+	} else if (key.which == '39') {
+		_slideshowHandler(CSSModal, 'next');
 	}
 
 	return;
@@ -74,8 +92,12 @@ var _initSlideshowItem = function (activeItem, state) {
 	if (state == 'hidden') {
 		var styleVisuallyHidden = 'border: 0;clip: rect(0 0 0 0);height: 1px;margin: -1px;overflow:hidden;padding:0;position:absolute;width:1px;';
 
-		activeItem.setAttribute('style', styleVisuallyHidden);
+		activeItem.className = '';
+		activeItem.style = styleVisuallyHidden;
 	} else if (state == 'show') {
+		var activeClass = 'is-active';
+
+		activeItem.className = activeClass;
 		activeItem.style = '';
 	}
 
@@ -112,12 +134,16 @@ var initSlideshow = function (CSSModal, elementList, activeItem) {
 	var $modalContent = CSSModal.activeElement.querySelector('.modal-content');
 
 	// Remove elements from DOM
-	$modalContent.innerHTML = ''; // @TODO: Currently fucks up DOM when closing modal and calling it again (nothing there).
+	// $modalContent.innerHTML = ''; // @TODO: Currently fucks up DOM when closing modal and calling it again (nothing there).
+	// Preload other elements
+	var i = 0;
+	var allItems = CSSModal.activeElement.querySelectorAll('img');
+
+	for (; i < allItems.length; i++) {
+		_initSlideshowItem(allItems[i], 'hidden');
+	}
 	// Show specified element
 	_initSlideshowItem(slideshowContent[activeItem], 'show');
-	// Preload other elements
-	_initSlideshowItem(slideshowContent[activeItem + 1], 'hidden');
-	_initSlideshowItem(slideshowContent[activeItem - 1], 'hidden');
 };
 
 /*
@@ -132,6 +158,16 @@ CSSModal.on('cssmodal:show', document, function () { // @TODO: Make it work for 
 		initSlideshow(CSSModal, slideshowSource, 2); // @TODO: Make it configurable
 	}
 });
+
+CSSModal.on('cssmodal:slideshow:next', document, function () {
+	_slideshowHandler(CSSModal, 'next');
+});
+
+CSSModal.on('cssmodal:slideshow:previous', document, function () {
+	_slideshowHandler(CSSModal, 'previous');
+});
+
+// CSSModal.on('cssmodal:hide', document, CSSModal.mainHandler);
 
 CSSModal.on('keyup', window, function (event) {
 	_keyboardHandler(CSSModal, event);
